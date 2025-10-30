@@ -1,25 +1,25 @@
 repeat task.wait() until game:IsLoaded()
-wait(5) -- extra load time
+wait(5)
 
 local Lighting = game.Lighting
 
--- Function to set nice lighting colors
+-- Function to set clean bright lighting
 local function setLighting()
-    Lighting.Ambient = Color3.fromRGB(200, 220, 255) -- ស្រស់ស្រួច
-    Lighting.Brightness = 2
-    Lighting.ClockTime = 12
-    Lighting.ColorShift_Bottom = Color3.fromRGB(180, 200, 255)
-    Lighting.ColorShift_Top = Color3.fromRGB(220, 240, 255)
-    Lighting.ExposureCompensation = 0.5
-    Lighting.FogColor = Color3.fromRGB(200, 220, 255)
-    Lighting.FogEnd = 100000
+    Lighting.Ambient = Color3.fromRGB(200, 200, 255)
+    Lighting.Brightness = 1
+    Lighting.ClockTime = 14
+    Lighting.ColorShift_Bottom = Color3.fromRGB(220, 220, 255)
+    Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
+    Lighting.ExposureCompensation = 0
+    Lighting.FogColor = Color3.fromRGB(240, 240, 255)
+    Lighting.FogEnd = 999999999
     Lighting.GeographicLatitude = 41.733
-    Lighting.OutdoorAmbient = Color3.fromRGB(210, 230, 255)
+    Lighting.OutdoorAmbient = Color3.fromRGB(240, 240, 255)
     Lighting.GlobalShadows = true
 end
 
 -- Remove unwanted effects
-for i,v in pairs(Lighting:GetChildren()) do
+for i, v in pairs(Lighting:GetChildren()) do
     if v:IsA("Sky") or v:IsA("BlurEffect") or v:IsA("BloomEffect") or v:IsA("SunRaysEffect") then
         v:Destroy()
     end
@@ -34,34 +34,55 @@ Lighting.DescendantAdded:Connect(function(obj)
     end
 end)
 
--- ===== Add Simple UI =====
+-- UI Creation
 local Player = game.Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "LightingUI"
-ScreenGui.Parent = PlayerGui
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MoonMenuGUI"
+screenGui.Parent = PlayerGui
 
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 250, 0, 100)
-Frame.Position = UDim2.new(0.8, 0, 0.05, 0)
-Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-Frame.BackgroundTransparency = 0.3
-Frame.Parent = ScreenGui
+-- Create Moon Button
+local moonButton = Instance.new("TextButton")
+moonButton.Name = "MoonButton"
+moonButton.Size = UDim2.new(0, 60, 0, 60)
+moonButton.Position = UDim2.new(0, 20, 0, 20)
+moonButton.BackgroundColor3 = Color3.fromRGB(50, 50, 100)
+moonButton.Text = "☾"
+moonButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+moonButton.Font = Enum.Font.GothamBold
+moonButton.TextScaled = true
+moonButton.Parent = screenGui
+moonButton.Active = true
+moonButton.Draggable = true -- Allow drag
 
-local Button = Instance.new("TextButton")
-Button.Size = UDim2.new(0, 230, 0, 40)
-Button.Position = UDim2.new(0, 10, 0, 30)
-Button.Text = "Change Lighting Color"
-Button.TextScaled = true
-Button.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-Button.TextColor3 = Color3.fromRGB(255,255,255)
-Button.Parent = Frame
+-- Create Menu Frame
+local menuFrame = Instance.new("Frame")
+menuFrame.Size = UDim2.new(0, 250, 0, 400)
+menuFrame.Position = UDim2.new(0, 100, 0, 100)
+menuFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
+menuFrame.BorderSizePixel = 0
+menuFrame.Visible = false
+menuFrame.Parent = screenGui
 
--- Change lighting color on button click
-Button.MouseButton1Click:Connect(function()
-    Lighting.Ambient = Color3.fromRGB(math.random(150,255), math.random(150,255), 255)
-    Lighting.ColorShift_Bottom = Color3.fromRGB(math.random(150,255), math.random(150,255), 255)
-    Lighting.ColorShift_Top = Color3.fromRGB(math.random(200,255), math.random(200,255), 255)
-    Lighting.FogColor = Color3.fromRGB(math.random(150,255), math.random(150,255), 255)
+-- Example function button inside menu
+local exampleBtn = Instance.new("TextButton")
+exampleBtn.Size = UDim2.new(0, 200, 0, 50)
+exampleBtn.Position = UDim2.new(0, 25, 0, 25)
+exampleBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 150)
+exampleBtn.Text = "Example Function"
+exampleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+exampleBtn.Font = Enum.Font.GothamBold
+exampleBtn.TextScaled = true
+exampleBtn.Parent = menuFrame
+
+exampleBtn.MouseButton1Click:Connect(function()
+    print("Function triggered!")
+    -- You can add more features here
+end)
+
+-- Toggle menu visibility on moon button click
+moonButton.MouseButton1Click:Connect(function()
+    menuFrame.Visible = not menuFrame.Visible
 end)
