@@ -1,88 +1,189 @@
 repeat task.wait() until game:IsLoaded()
 wait(5)
+-- UI Menu with Moon Toggle | Author: ChatGPT
+-- Theme: Professional, Sleek, Tech-inspired
+-- User: Chea Cheat
 
-local Lighting = game.Lighting
-
--- Function to set clean bright lighting
-local function setLighting()
-    Lighting.Ambient = Color3.fromRGB(200, 200, 255)
-    Lighting.Brightness = 1
-    Lighting.ClockTime = 14
-    Lighting.ColorShift_Bottom = Color3.fromRGB(220, 220, 255)
-    Lighting.ColorShift_Top = Color3.fromRGB(255, 255, 255)
-    Lighting.ExposureCompensation = 0
-    Lighting.FogColor = Color3.fromRGB(240, 240, 255)
-    Lighting.FogEnd = 999999999
-    Lighting.GeographicLatitude = 41.733
-    Lighting.OutdoorAmbient = Color3.fromRGB(240, 240, 255)
-    Lighting.GlobalShadows = true
-end
-
--- Remove unwanted effects
-for i, v in pairs(Lighting:GetChildren()) do
-    if v:IsA("Sky") or v:IsA("BlurEffect") or v:IsA("BloomEffect") or v:IsA("SunRaysEffect") then
-        v:Destroy()
-    end
-end
-
-setLighting()
-
-Lighting.Changed:Connect(setLighting)
-Lighting.DescendantAdded:Connect(function(obj)
-    if obj:IsA("Sky") or obj:IsA("BlurEffect") or obj:IsA("BloomEffect") or obj:IsA("SunRaysEffect") then
-        obj:Destroy()
-    end
-end)
-
--- UI Creation
-local Player = game.Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
+-- Services
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
 -- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "MoonMenuGUI"
-screenGui.Parent = PlayerGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "TechMenu"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
 
--- Create Moon Button
-local moonButton = Instance.new("TextButton")
-moonButton.Name = "MoonButton"
-moonButton.Size = UDim2.new(0, 60, 0, 60)
-moonButton.Position = UDim2.new(0, 20, 0, 20)
-moonButton.BackgroundColor3 = Color3.fromRGB(50, 50, 100)
-moonButton.Text = "☾"
-moonButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-moonButton.Font = Enum.Font.GothamBold
-moonButton.TextScaled = true
-moonButton.Parent = screenGui
-moonButton.Active = true
-moonButton.Draggable = true -- Allow drag
+-- Colors
+local COLORS = {
+    background = Color3.fromHex("#0A0A0A"),
+    accent = Color3.fromHex("#00AEEF"),
+    secondaryAccent = Color3.fromHex("#FFAA00"),
+    textMain = Color3.fromHex("#F5F5F5"),
+    textSub = Color3.fromHex("#B0B0B0"),
+    success = Color3.fromHex("#00FF88"),
+    warning = Color3.fromHex("#FF4444"),
+    border = Color3.fromHex("#303030"),
+}
 
--- Create Menu Frame
-local menuFrame = Instance.new("Frame")
-menuFrame.Size = UDim2.new(0, 250, 0, 400)
-menuFrame.Position = UDim2.new(0, 100, 0, 100)
-menuFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
-menuFrame.BorderSizePixel = 0
-menuFrame.Visible = false
-menuFrame.Parent = screenGui
+-- Function to make draggable UI
+local function makeDraggable(obj, dragHandle)
+	local dragging, dragInput, startPos, startInputPos
+	local UIS = game:GetService("UserInputService")
+	
+	dragHandle = dragHandle or obj
+	dragHandle.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			startInputPos = input.Position
+			startPos = obj.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+	UIS.InputChanged:Connect(function(input)
+		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+			local delta = input.Position - startInputPos
+			obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+end
 
--- Example function button inside menu
-local exampleBtn = Instance.new("TextButton")
-exampleBtn.Size = UDim2.new(0, 200, 0, 50)
-exampleBtn.Position = UDim2.new(0, 25, 0, 25)
-exampleBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 150)
-exampleBtn.Text = "Example Function"
-exampleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-exampleBtn.Font = Enum.Font.GothamBold
-exampleBtn.TextScaled = true
-exampleBtn.Parent = menuFrame
+-- Moon Button (toggle)
+local moon = Instance.new("ImageButton")
+moon.Name = "MoonToggle"
+moon.Size = UDim2.new(0, 48, 0, 48)
+moon.Position = UDim2.new(0, 40, 0, 80)
+moon.BackgroundTransparency = 1
+moon.Image = "rbxassetid://6031075937" -- Moon icon
+moon.ImageColor3 = COLORS.accent
+moon.Parent = gui
 
-exampleBtn.MouseButton1Click:Connect(function()
-    print("Function triggered!")
-    -- You can add more features here
+makeDraggable(moon)
+
+-- Menu Frame
+local menu = Instance.new("Frame")
+menu.Name = "Menu"
+menu.Size = UDim2.new(0, 340, 0, 250)
+menu.Position = UDim2.new(0, 100, 0, 100)
+menu.BackgroundColor3 = COLORS.background
+menu.BorderSizePixel = 0
+menu.Visible = true
+menu.Parent = gui
+makeDraggable(menu)
+
+-- Shadow
+local shadow = Instance.new("UIStroke")
+shadow.Color = COLORS.border
+shadow.Thickness = 1
+shadow.Parent = menu
+
+-- Corner radius
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = menu
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 40)
+title.Position = UDim2.new(0, 10, 0, 10)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.MontserratBold
+title.Text = "Tech Control Menu"
+title.TextSize = 20
+title.TextColor3 = COLORS.textMain
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = menu
+
+-- Subtitle (username)
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -20, 0, 20)
+subtitle.Position = UDim2.new(0, 10, 0, 45)
+subtitle.BackgroundTransparency = 1
+subtitle.Font = Enum.Font.Roboto
+subtitle.Text = "Logged as: " .. PLAYER_NAME
+subtitle.TextSize = 14
+subtitle.TextColor3 = COLORS.textSub
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.Parent = menu
+
+-- Button creation helper
+local function createButton(text, color)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -40, 0, 38)
+	btn.BackgroundColor3 = color or COLORS.accent
+	btn.TextColor3 = COLORS.textMain
+	btn.TextSize = 16
+	btn.Font = Enum.Font.RobotoMedium
+	btn.Text = text
+	btn.BorderSizePixel = 0
+	
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 6)
+	c.Parent = btn
+	
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = COLORS.border
+	stroke.Thickness = 1
+	stroke.Parent = btn
+	
+	btn.MouseEnter:Connect(function()
+		btn.BackgroundColor3 = color == COLORS.accent and COLORS.secondaryAccent or COLORS.accent
+	end)
+	btn.MouseLeave:Connect(function()
+		btn.BackgroundColor3 = color or COLORS.accent
+	end)
+	
+	return btn
+end
+
+-- Buttons
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 10)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.VerticalAlignment = Enum.VerticalAlignment.Top
+layout.Parent = menu
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+local container = Instance.new("Frame")
+container.Size = UDim2.new(1, 0, 1, -80)
+container.Position = UDim2.new(0, 0, 0, 80)
+container.BackgroundTransparency = 1
+container.Parent = menu
+
+layout.Parent = container
+
+local startBtn = createButton("Start HopServer", COLORS.accent)
+startBtn.Parent = container
+local stopBtn = createButton("Stop HopServer", COLORS.warning)
+stopBtn.Parent = container
+local showBtn = createButton("Show Decoded Constants", COLORS.secondaryAccent)
+showBtn.Parent = container
+
+startBtn.MouseButton1Click:Connect(function()
+	print("[TechMenu] HopServer Started")
+end)
+stopBtn.MouseButton1Click:Connect(function()
+	print("[TechMenu] HopServer Stopped")
+end)
+showBtn.MouseButton1Click:Connect(function()
+	print("[TechMenu] Showing Decoded Constants...")
 end)
 
--- Toggle menu visibility on moon button click
-moonButton.MouseButton1Click:Connect(function()
-    menuFrame.Visible = not menuFrame.Visible
+-- Moon Toggle behavior
+local open = true
+moon.MouseButton1Click:Connect(function()
+	open = not open
+	menu.Visible = open
+	if open then
+		moon.ImageColor3 = COLORS.accent
+	else
+		moon.ImageColor3 = COLORS.secondaryAccent
+	end
 end)
+
+print("[✅] Tech UI loaded for", PLAYER_NAME)
