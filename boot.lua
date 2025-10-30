@@ -1,37 +1,41 @@
 repeat task.wait() until game:IsLoaded()
-wait(5)
--- UI Menu with Moon Toggle | Author: ChatGPT
--- Theme: Professional, Sleek, Tech-inspired
--- User: Chea Cheat
+wait(5)--[[
+  🔧 Chea Cheat Blox Tool UI
+  Author: ChatGPT
+  V3 - Hacker Tech Style
+  Features:
+  - Moon toggle
+  - Animated menu
+  - Scrollable options
+  - Glow outline
+  - Draggable UI
+]]--
 
--- Services
+local PLAYER_NAME = "bj5jhgg"
+
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
--- Create ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "TechMenu"
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "CheaCheatTechUI"
 gui.ResetOnSpawn = false
-gui.Parent = playerGui
 
--- Colors
+-- 🎨 Colors
 local COLORS = {
-    background = Color3.fromHex("#0A0A0A"),
-    accent = Color3.fromHex("#00AEEF"),
-    secondaryAccent = Color3.fromHex("#FFAA00"),
-    textMain = Color3.fromHex("#F5F5F5"),
-    textSub = Color3.fromHex("#B0B0B0"),
-    success = Color3.fromHex("#00FF88"),
-    warning = Color3.fromHex("#FF4444"),
-    border = Color3.fromHex("#303030"),
+	bg = Color3.fromHex("#0A0A0A"),
+	accent = Color3.fromHex("#00AEEF"),
+	accent2 = Color3.fromHex("#FFAA00"),
+	textMain = Color3.fromHex("#F5F5F5"),
+	textSub = Color3.fromHex("#B0B0B0"),
+	border = Color3.fromHex("#303030"),
+	success = Color3.fromHex("#00FF88"),
+	warning = Color3.fromHex("#FF4444"),
 }
 
--- Function to make draggable UI
+-- 🖱️ Make draggable
 local function makeDraggable(obj, dragHandle)
 	local dragging, dragInput, startPos, startInputPos
-	local UIS = game:GetService("UserInputService")
-	
 	dragHandle = dragHandle or obj
 	dragHandle.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -53,137 +57,135 @@ local function makeDraggable(obj, dragHandle)
 	end)
 end
 
--- Moon Button (toggle)
+-- 🌙 Moon Toggle Button
 local moon = Instance.new("ImageButton")
-moon.Name = "MoonToggle"
-moon.Size = UDim2.new(0, 48, 0, 48)
-moon.Position = UDim2.new(0, 40, 0, 80)
+moon.Size = UDim2.new(0, 50, 0, 50)
+moon.Position = UDim2.new(0, 30, 0, 100)
 moon.BackgroundTransparency = 1
-moon.Image = "rbxassetid://6031075937" -- Moon icon
+moon.Image = "rbxassetid://6031075937"
 moon.ImageColor3 = COLORS.accent
 moon.Parent = gui
-
 makeDraggable(moon)
 
--- Menu Frame
+-- 🪟 Menu Frame
 local menu = Instance.new("Frame")
-menu.Name = "Menu"
-menu.Size = UDim2.new(0, 340, 0, 250)
-menu.Position = UDim2.new(0, 100, 0, 100)
-menu.BackgroundColor3 = COLORS.background
-menu.BorderSizePixel = 0
+menu.Size = UDim2.new(0, 400, 0, 320)
+menu.Position = UDim2.new(0, 90, 0, 100)
+menu.BackgroundColor3 = COLORS.bg
 menu.Visible = true
 menu.Parent = gui
 makeDraggable(menu)
 
--- Shadow
-local shadow = Instance.new("UIStroke")
-shadow.Color = COLORS.border
-shadow.Thickness = 1
-shadow.Parent = menu
-
--- Corner radius
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 8)
-corner.Parent = menu
+-- Corners + Glow
+Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 10)
+local glow = Instance.new("UIStroke", menu)
+glow.Color = COLORS.accent
+glow.Thickness = 2
+glow.Transparency = 0.3
 
 -- Title
-local title = Instance.new("TextLabel")
+local title = Instance.new("TextLabel", menu)
 title.Size = UDim2.new(1, -20, 0, 40)
 title.Position = UDim2.new(0, 10, 0, 10)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.MontserratBold
-title.Text = "Tech Control Menu"
-title.TextSize = 20
+title.Text = "Blox Tool Hub - Chea Cheat"
 title.TextColor3 = COLORS.textMain
+title.TextSize = 20
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = menu
 
--- Subtitle (username)
-local subtitle = Instance.new("TextLabel")
-subtitle.Size = UDim2.new(1, -20, 0, 20)
-subtitle.Position = UDim2.new(0, 10, 0, 45)
-subtitle.BackgroundTransparency = 1
-subtitle.Font = Enum.Font.Roboto
-subtitle.Text = "Logged as: " .. PLAYER_NAME
-subtitle.TextSize = 14
-subtitle.TextColor3 = COLORS.textSub
-subtitle.TextXAlignment = Enum.TextXAlignment.Left
-subtitle.Parent = menu
+-- Scroll container
+local scroll = Instance.new("ScrollingFrame", menu)
+scroll.Size = UDim2.new(1, -20, 1, -60)
+scroll.Position = UDim2.new(0, 10, 0, 50)
+scroll.BackgroundTransparency = 1
+scroll.ScrollBarThickness = 6
+scroll.CanvasSize = UDim2.new(0, 0, 2, 0)
 
--- Button creation helper
+local layout = Instance.new("UIListLayout", scroll)
+layout.Padding = UDim.new(0, 10)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- Helper functions
 local function createButton(text, color)
 	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(1, -40, 0, 38)
+	btn.Size = UDim2.new(1, 0, 0, 36)
 	btn.BackgroundColor3 = color or COLORS.accent
 	btn.TextColor3 = COLORS.textMain
 	btn.TextSize = 16
 	btn.Font = Enum.Font.RobotoMedium
 	btn.Text = text
 	btn.BorderSizePixel = 0
-	
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 6)
-	c.Parent = btn
-	
-	local stroke = Instance.new("UIStroke")
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+	local stroke = Instance.new("UIStroke", btn)
 	stroke.Color = COLORS.border
 	stroke.Thickness = 1
-	stroke.Parent = btn
-	
 	btn.MouseEnter:Connect(function()
-		btn.BackgroundColor3 = color == COLORS.accent and COLORS.secondaryAccent or COLORS.accent
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = COLORS.accent2}):Play()
 	end)
 	btn.MouseLeave:Connect(function()
-		btn.BackgroundColor3 = color or COLORS.accent
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = color or COLORS.accent}):Play()
 	end)
-	
 	return btn
 end
 
--- Buttons
-local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0, 10)
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-layout.VerticalAlignment = Enum.VerticalAlignment.Top
-layout.Parent = menu
-layout.SortOrder = Enum.SortOrder.LayoutOrder
+local function createSection(name)
+	local lbl = Instance.new("TextLabel")
+	lbl.Size = UDim2.new(1, 0, 0, 24)
+	lbl.BackgroundTransparency = 1
+	lbl.Font = Enum.Font.MontserratSemiBold
+	lbl.Text = "⚙️ " .. name
+	lbl.TextSize = 16
+	lbl.TextColor3 = COLORS.accent2
+	lbl.TextXAlignment = Enum.TextXAlignment.Left
+	return lbl
+end
 
-local container = Instance.new("Frame")
-container.Size = UDim2.new(1, 0, 1, -80)
-container.Position = UDim2.new(0, 0, 0, 80)
-container.BackgroundTransparency = 1
-container.Parent = menu
+-- 🧩 Sections + Tools
+local sections = {
+	{title="Auto Farm", buttons={"Auto Farm Level", "Auto Farm Boss", "Auto Collect Drops"}},
+	{title="Teleport", buttons={"Teleport to Island", "Teleport to Sea 2", "Teleport to Player"}},
+	{title="Server", buttons={"Rejoin", "Hop Server", "Low Ping Server"}},
+	{title="Misc", buttons={"Infinite Energy", "No Clip", "Speed Boost", "ESP Player"}},
+}
 
-layout.Parent = container
+for _, sec in pairs(sections) do
+	local secLbl = createSection(sec.title)
+	secLbl.Parent = scroll
+	for _, btnText in pairs(sec.buttons) do
+		local btn = createButton(btnText)
+		btn.Parent = scroll
+		btn.MouseButton1Click:Connect(function()
+			print("[CheaCheat UI] Clicked:", btnText)
+		end)
+	end
+end
 
-local startBtn = createButton("Start HopServer", COLORS.accent)
-startBtn.Parent = container
-local stopBtn = createButton("Stop HopServer", COLORS.warning)
-stopBtn.Parent = container
-local showBtn = createButton("Show Decoded Constants", COLORS.secondaryAccent)
-showBtn.Parent = container
-
-startBtn.MouseButton1Click:Connect(function()
-	print("[TechMenu] HopServer Started")
-end)
-stopBtn.MouseButton1Click:Connect(function()
-	print("[TechMenu] HopServer Stopped")
-end)
-showBtn.MouseButton1Click:Connect(function()
-	print("[TechMenu] Showing Decoded Constants...")
-end)
-
--- Moon Toggle behavior
-local open = true
+-- 🌙 Toggle Animation
+local isOpen = true
+local tweenTime = 0.4
 moon.MouseButton1Click:Connect(function()
-	open = not open
-	menu.Visible = open
-	if open then
+	isOpen = not isOpen
+	if isOpen then
+		menu.Visible = true
+		menu.Position = UDim2.new(0, 90, 0, 120)
+		menu.BackgroundTransparency = 1
+		TweenService:Create(menu, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			BackgroundTransparency = 0,
+			Position = UDim2.new(0, 90, 0, 100)
+		}):Play()
 		moon.ImageColor3 = COLORS.accent
 	else
-		moon.ImageColor3 = COLORS.secondaryAccent
+		local tween = TweenService:Create(menu, TweenInfo.new(tweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 90, 0, 130)
+		})
+		tween:Play()
+		moon.ImageColor3 = COLORS.accent2
+		task.delay(tweenTime, function()
+			menu.Visible = false
+		end)
 	end
 end)
 
-print("[✅] Tech UI loaded for", PLAYER_NAME)
+print("[✅] Chea Cheat Blox Tool UI Loaded Successfully")
